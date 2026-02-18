@@ -433,6 +433,26 @@
             </intent-filter>
         </service>
 
+        <!-- Speech (Voice Unlock / Assistant) -->
+
+        <service android:name="org.microg.gms.speech.SpeechService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.speech.service.START" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <!-- Search Auth -->
+
+        <service android:name="org.microg.gms.search.SearchAuthService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.search.service.SEARCH_AUTH_START" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
         <!-- People -->
 
         <service android:name="org.microg.gms.people.PeopleService">
@@ -1274,7 +1294,7 @@
                 <action android:name="com.google.android.gms.rcs.START" />
                 <action android:name="com.google.android.gms.romanesco.MODULE_BACKUP_AGENT" />
                 <action android:name="com.google.android.gms.romanesco.service.START" />
-                <action android:name="com.google.android.gms.search.service.SEARCH_AUTH_START" />
+                <!-- search.service.SEARCH_AUTH_START moved to SearchAuthService -->
                 <action android:name="com.google.android.gms.sesame.service.BIND" />
                 <action android:name="com.google.android.gms.telephonyspam.service.START" />
                 <action android:name="com.google.android.gms.testsupport.service.START" />
@@ -1290,7 +1310,7 @@
                 <action android:name="com.google.android.gms.social.location.activity.service.START" />
                 <action android:name="com.google.android.gms.statementservice.EXECUTE" />
                 <action android:name="com.google.android.gms.stats.ACTION_UPLOAD_DROPBOX_ENTRIES" />
-                <action android:name="com.google.android.gms.speech.service.START" />
+                <!-- speech.service.START moved to SpeechService -->
                 <action android:name="com.google.android.gms.thunderbird.service.START" />
                 <action android:name="com.google.android.gms.trustagent.BridgeApi.START" />
                 <action android:name="com.google.android.gms.trustagent.StateApi.START" />

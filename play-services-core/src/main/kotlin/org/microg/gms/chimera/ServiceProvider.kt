@@ -15,6 +15,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.core.os.bundleOf
+import com.google.android.gms.chimera.DynamiteContextFactory
 import org.microg.gms.DummyService
 import org.microg.gms.common.GmsService
 import org.microg.gms.common.RemoteListenerProxy
@@ -23,6 +24,7 @@ class ServiceProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
         Log.d(TAG, "onCreate")
+        DynamiteContextFactory.setGmsContext(context!!)
         return true
     }
 

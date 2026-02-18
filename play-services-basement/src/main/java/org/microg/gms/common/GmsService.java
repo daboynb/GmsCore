@@ -91,7 +91,7 @@ public enum GmsService {
     PLUS_INTERNAL(70),
     MAPS_API(71),
     TRUSTAGENT_TRUSTED_DEVICES(72),
-    SEARCH_AUTH(73),
+    SEARCH_AUTH(73, "com.google.android.gms.search.service.SEARCH_AUTH_START"),
     ACCOUNT_STATUS(74),
     SMARTDEVICE_D2D_SOURCE_DEVICE(75, "com.google.android.gms.smartdevice.d2d.SourceDeviceService.START"),
     SMARTDEVICE_D2D_TARGET_DEVICE(76, "com.google.android.gms.smartdevice.d2d.TargetDeviceService.START"),

@@ -34,6 +34,33 @@ public class DynamiteContextFactory {
     // WeakHashMap cannot be used, and there is a high probability that it will be recycled, causing ClassLoader to be rebuilt
     private static final Map<String, ClassLoader> sClassLoaderCache = new HashMap<>();
 
+    private static Context sGmsContext;
+
+    /**
+     * Set the GmsCore application context. Must be called early (e.g. from a ContentProvider)
+     * so that Dynamite modules are loaded from the correct package, not from the real
+     * Google Play Services when both are installed.
+     */
+    public static void setGmsContext(Context context) {
+        if (context != null) {
+            sGmsContext = context.getApplicationContext();
+        }
+    }
+
+    private static Context resolveGmsContext(Context originalContext) throws PackageManager.NameNotFoundException {
+        // If we have our own GmsCore context, use it to ensure we load classes
+        // from OUR APK, not from the real Google Play Services
+        if (sGmsContext != null) {
+            return sGmsContext;
+        }
+        // Fallback: try the user/ReVanced package first, then the standard GMS package
+        try {
+            return originalContext.createPackageContext(Constants.USER_MICROG_PACKAGE_NAME, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            return originalContext.createPackageContext(Constants.GMS_PACKAGE_NAME, 0);
+        }
+    }
+
     public static DynamiteContext createDynamiteContext(String moduleId, Context originalContext) {
         if (originalContext == null) {
             Log.w(TAG, "create <DynamiteContext> Original context is null");
@@ -49,7 +76,7 @@ public class DynamiteContextFactory {
         }
         try {
             DynamiteModuleInfo moduleInfo = new DynamiteModuleInfo(moduleId);
-            Context gmsContext = originalContext.createPackageContext(Constants.GMS_PACKAGE_NAME, 0);
+            Context gmsContext = resolveGmsContext(originalContext);
             Context originalAppContext = originalContext.getApplicationContext();
 
             DynamiteContext dynamiteContext;
