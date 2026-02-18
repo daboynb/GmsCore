@@ -933,7 +933,7 @@
 
         <service android:name="org.microg.gms.phenotype.PhenotypeService">
             <intent-filter>
-                <action android:name="app.revanced.android.gms.phenotype.service.START" />
+                <action android:name="com.google.android.gms.phenotype.service.START" />
             </intent-filter>
         </service>
 
