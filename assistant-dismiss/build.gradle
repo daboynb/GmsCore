@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def debugKeystoreFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
+
 android {
     namespace "org.microg.gms.assistant"
     compileSdkVersion androidCompileSdk
@@ -13,18 +15,20 @@ android {
         versionName "1.0"
     }
 
-    signingConfigs {
-        debug {
-            storeFile file(System.getProperty("user.home") + "/.android/debug.keystore")
-            storePassword "android"
-            keyAlias "androiddebugkey"
-            keyPassword "android"
+    if (debugKeystoreFile.exists()) {
+        signingConfigs {
+            debug {
+                storeFile debugKeystoreFile
+                storePassword "android"
+                keyAlias "androiddebugkey"
+                keyPassword "android"
+            }
         }
-    }
 
-    buildTypes {
-        release {
-            signingConfig signingConfigs.debug
+        buildTypes {
+            release {
+                signingConfig signingConfigs.debug
+            }
         }
     }
 
