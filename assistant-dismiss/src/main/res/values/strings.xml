@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assistant_dismiss_service_description">Automatically dismisses the Google Assistant overlay after a voice command plays music.</string>
+</resources>
