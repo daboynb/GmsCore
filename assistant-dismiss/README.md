@@ -1,77 +1,71 @@
-# Assistant Dismiss — Fix bolla Assistente Google
+# Assistant Dismiss — Fix Google Assistant bubble
 
-## Il problema
+## The problem
 
-Quando dici **"Hey Google, metti [canzone]"**, YouTube Music ReVanced riproduce il brano ma la **bolla dell'Assistente Google resta aperta** sullo schermo. Questo succede perché il server di Google non manda il comando di chiusura quando la musica parte tramite microG.
+When you say **"Hey Google, play [song]"**, YouTube Music ReVanced starts playing the track but the **Google Assistant bubble stays open** on screen. This happens because Google's server doesn't send the close command when music starts playing through microG.
 
-## La soluzione
+## The solution
 
-Una piccola app separata che funziona come servizio di accessibilità:
+A small standalone app that works as an accessibility service:
 
-1. Rileva quando si apre la bolla dell'Assistente
-2. Aspetta che la musica parta
-3. La chiude automaticamente
+1. Detects when the Assistant bubble opens
+2. Waits for music to start playing
+3. Automatically dismisses it
 
-Se **non** stai ascoltando musica (es. fai una domanda all'Assistente), la bolla **non** viene toccata.
+If you're **not** listening to music (e.g. asking the Assistant a question), the bubble is **not** touched.
 
-> Perché un'app separata e non dentro GmsCore? Perché GmsCore è troppo grande — Android blocca i servizi di accessibilità di app con troppi componenti. Un'app leggera a parte funziona senza problemi.
+> Why a separate app instead of inside GmsCore? Because GmsCore is too large — Android blocks accessibility services from apps with too many components. A lightweight standalone app works without issues.
 
 ---
 
-## Guida passo-passo
+## Step-by-step guide
 
-Prerequisiti: telefono collegato via USB con **debug USB attivo**, e `adb` installato sul PC.
+Prerequisites: phone connected via USB with **USB debugging enabled**, and `adb` installed on your PC.
 
-### Passo 1 — Compila GmsCore
+### Step 1 — Build GmsCore
 
 ```bash
 cd GmsCore
 ./gradlew :play-services-core:assembleHmsDefaultRelease
 ```
 
-L'APK esce in:
+The APK will be at:
 ```
 play-services-core/build/outputs/apk/hmsDefault/release/app.revanced.android.gms-*.apk
 ```
 
-### Passo 2 — Compila Assistant Dismiss
+### Step 2 — Build Assistant Dismiss
 
 ```bash
 ./gradlew :assistant-dismiss:assembleRelease
 ```
 
-L'APK esce in:
+The APK will be at:
 ```
-assistant-dismiss/build/outputs/apk/release/assistant-dismiss-release-unsigned.apk
+assistant-dismiss/build/outputs/apk/release/assistant-dismiss-1.0.apk
 ```
 
-### Passo 3 — Firma entrambe le APK
+### Step 3 — Sign the GmsCore APK
 
-Servono firmate per poterle installare. Qui usiamo il keystore di debug (va bene per uso personale):
+Assistant Dismiss is signed automatically during build. GmsCore needs to be signed manually using the debug keystore (fine for personal use):
 
 ```bash
-# Firma GmsCore
 jarsigner -keystore ~/.android/debug.keystore -storepass android \
   play-services-core/build/outputs/apk/hmsDefault/release/app.revanced.android.gms-*.apk \
   androiddebugkey
-
-# Firma Assistant Dismiss
-jarsigner -keystore ~/.android/debug.keystore -storepass android \
-  assistant-dismiss/build/outputs/apk/release/assistant-dismiss-release-unsigned.apk \
-  androiddebugkey
 ```
 
-### Passo 4 — Installa le APK sul telefono
+### Step 4 — Install both APKs
 
 ```bash
-# Installa GmsCore
+# Install GmsCore
 adb install -r play-services-core/build/outputs/apk/hmsDefault/release/app.revanced.android.gms-*.apk
 
-# Installa Assistant Dismiss
-adb install -r assistant-dismiss/build/outputs/apk/release/assistant-dismiss-release-unsigned.apk
+# Install Assistant Dismiss
+adb install -r assistant-dismiss/build/outputs/apk/release/assistant-dismiss-1.0.apk
 ```
 
-### Passo 5 — Attiva il servizio di accessibilità
+### Step 5 — Enable the accessibility service
 
 ```bash
 adb shell settings put secure enabled_accessibility_services \
@@ -79,21 +73,21 @@ adb shell settings put secure enabled_accessibility_services \
 adb shell settings put secure accessibility_enabled 1
 ```
 
-Oppure dal telefono: **Impostazioni > Accessibilità > Assistant Dismiss > Attiva**.
+Or from the phone: **Settings > Accessibility > Assistant Dismiss > Enable**.
 
-### Passo 6 — Verifica
+### Step 6 — Verify
 
 ```bash
 adb shell dumpsys accessibility | grep assistant
 ```
 
-Se vedi `Enabled services` con `app.revanced.android.gms.assistant` dentro, è tutto OK.
+If you see `Enabled services` containing `app.revanced.android.gms.assistant`, you're all set.
 
 ---
 
-## Test
+## Testing
 
-| Comando vocale | Risultato atteso |
+| Voice command | Expected result |
 |---|---|
-| "Hey Google, metti una canzone" | La bolla si chiude dopo qualche secondo |
-| "Hey Google, che tempo fa?" | La bolla resta aperta (nessuna musica = nessuna azione) |
+| "Hey Google, play a song" | The bubble closes after a few seconds |
+| "Hey Google, what's the weather?" | The bubble stays open (no music = no action) |
